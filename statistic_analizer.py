@@ -190,7 +190,7 @@ HTML_TEMPLATE = """
         </div>
         <div class="gauge-container">
             <div class="gauge" style="--gauge-value: {{ turb_deg }}"></div>
-            <div class="gauge-value">{{ turbidity }}NTU</div>
+            <div class="gauge-value">{{ turb }}NTU</div>
         </div>
     </div>
 
@@ -225,65 +225,76 @@ HTML_TEMPLATE = """
 </html>
 """
 
-def get_latest_data():
+# def get_latest_data():
+#     query = f'''
+#     from(bucket: "{INFLUX_BUCKET}")
+#       |> range(start: 0)
+#       |> filter(fn: (r) => r._field == "Temperature")
+#       |> max()
+      
+#     '''
+
+#     tables = query_api.query(query)
+
+#     data = {}
+
+#     for table in tables:
+#         for record in table.records:
+#             data[record.get_field()] = record.get_value()
+
+#     return data
+
+def get_highest_temp_row():
     query = f'''
     from(bucket: "{INFLUX_BUCKET}")
-      |> range(start: -10m)
-      |> filter(fn: (r) => r._measurement == "water_quality")
-      |> last()
+      |> range(start: 0)
+      |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+      |> sort(columns: ["Temperature"], desc: true)
+      |> limit(n:1)
     '''
 
     tables = query_api.query(query)
-
     data = {}
 
     for table in tables:
         for record in table.records:
-            data[record.get_field()] = record.get_value()
+            # After pivot, each record contains all fields in one row
+            data = record.values
+            break  # only need the first record
 
     return data
 
 
 
 
-
 @application.route("/")
 def index():
-    data = get_latest_data()
-    
-    
-    temp=data.get("Temperature", 0),
-    turb=data.get("Turbidity", 0),
-    PH=data.get("PH", 0),
-    
-    temp_deg=min(360, (temp / 50) * 360),
-    turb_deg=min(360, (turb / 70) * 360),
-    ph_deg=min(360, (PH / 14) * 360),
-        
-    
+    data = get_highest_temp_row()
 
-    last_updated = datetime.now(
-        ZoneInfo("Asia/Kuala_Lumpur")
-    ).strftime("%Y-%m-%d %H:%M:%S")
+    temp = float(data.get("Temperature", 0))
+    turb = float(data.get("Turbidity", 0))
+    PH = float(data.get("PH", 0))
+    
+    temp_deg = min(360, (temp / 50) * 360)
+    turb_deg = min(360, (turb / 70) * 360)
+    ph_deg = min(360, (PH / 14) * 360)
+
+    last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
 
     return render_template_string(
         HTML_TEMPLATE,
         total=data.get("Total%", 0),
         lat=data.get("Latitude", 0),
         lon=data.get("Longitude", 0),
-        temp = temp,
-        turb = turb,
-        PH = PH,
-        turb_deg = turb_deg,
-        temp_deg = temp_deg,
-        ph_deg = ph_deg,
+        temp=temp,
+        turb=turb,
+        PH=PH,
+        turb_deg=turb_deg,
+        temp_deg=temp_deg,
+        ph_deg=ph_deg,
         last_updated=last_updated,
-        
-        
-        
         interval=INTERVAL
     )
-
 
 
 
@@ -320,4 +331,5 @@ def index():
 # if __name__ == "__main__":
 
 #     application.run(debug=True)
+
 
