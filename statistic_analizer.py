@@ -62,6 +62,13 @@ HTML_TEMPLATE = """
             color: #1ca9c9;
         }
 
+        .container{
+            width: 100%;
+            max-width: 700px;
+            padding: 24px;
+        
+        }
+        
         .dashboard-grid {
             max-width: 1100px;
             width: 100%;
@@ -160,67 +167,68 @@ HTML_TEMPLATE = """
 
 <body>
 
-<div class="dashboard-grid">
+<div class="container">
 
     <h1>Pollution Monitoring Dashboard</h1>
-
-    <div class="dashboard-card">
-        <div class="card-header">
-            <div class="card-icon">📊</div>
-            <div class="card-title">Total Pollution</div>
+    <div class="dashboard-grid">
+    
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">📊</div>
+                <div class="card-title">Total Pollution</div>
+            </div>
+            <div class="card-value">{{ total }}%</div>
         </div>
-        <div class="card-value">{{ total }}%</div>
+    
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🌡</div>
+                <div class="card-title">Temperature</div>
+            </div>
+            <div class="gauge-container">
+                <div class="gauge" style="--gauge-value: {{ temp_deg }}"></div>
+                <div class="gauge-value">{{ temp }} °C</div>
+            </div>
+        </div>
+    
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🌊</div>
+                <div class="card-title">Turbidity</div>
+            </div>
+            <div class="gauge-container">
+                <div class="gauge" style="--gauge-value: {{ turb_deg }}"></div>
+                <div class="gauge-value">{{ turb }}NTU</div>
+            </div>
+        </div>
+    
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🧪</div>
+                <div class="card-title">pH Value</div>
+            </div>
+            <div class="gauge-container">
+                <div class="gauge" style="--gauge-value: {{ ph_deg }}"></div>
+                <div class="gauge-value">{{ PH }}</div>
+            </div>
+        </div>
+    
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">📍</div>
+                <div class="card-title">GPS Location</div>
+            </div>
+            <div class="card-value">
+                {{ lat }}, {{ lon }}
+            </div>
+        </div>
+    
+        <div class="footer">
+            Last updated: {{ last_updated }} (Asia/Kuala Lumpur) · Auto refresh {{ interval }}s
+        </div>
+    
     </div>
-
-    <div class="dashboard-card">
-        <div class="card-header">
-            <div class="card-icon">🌡</div>
-            <div class="card-title">Temperature</div>
-        </div>
-        <div class="gauge-container">
-            <div class="gauge" style="--gauge-value: {{ temp_deg }}"></div>
-            <div class="gauge-value">{{ temp }} °C</div>
-        </div>
-    </div>
-
-    <div class="dashboard-card">
-        <div class="card-header">
-            <div class="card-icon">🌊</div>
-            <div class="card-title">Turbidity</div>
-        </div>
-        <div class="gauge-container">
-            <div class="gauge" style="--gauge-value: {{ turb_deg }}"></div>
-            <div class="gauge-value">{{ turb }}NTU</div>
-        </div>
-    </div>
-
-    <div class="dashboard-card">
-        <div class="card-header">
-            <div class="card-icon">🧪</div>
-            <div class="card-title">pH Value</div>
-        </div>
-        <div class="gauge-container">
-            <div class="gauge" style="--gauge-value: {{ ph_deg }}"></div>
-            <div class="gauge-value">{{ PH }}</div>
-        </div>
-    </div>
-
-    <div class="dashboard-card">
-        <div class="card-header">
-            <div class="card-icon">📍</div>
-            <div class="card-title">GPS Location</div>
-        </div>
-        <div class="card-value">
-            {{ lat }}, {{ lon }}
-        </div>
-    </div>
-
-    <div class="footer">
-        Last updated: {{ last_updated }} (Asia/Kuala Lumpur) · Auto refresh {{ interval }}s
-    </div>
-
 </div>
-
 </body>
 </html>
 """
@@ -331,5 +339,6 @@ def index():
 # if __name__ == "__main__":
 
 #     application.run(debug=True)
+
 
 
