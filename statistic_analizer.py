@@ -1,6 +1,6 @@
 from flask import Flask, render_template_string
 # import pandas as pd
-# import os
+import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from influxdb_client import InfluxDBClient
@@ -12,10 +12,18 @@ application = Flask(__name__)
 # BASE_DIR = os.path.dirname(os.path.abspath(_file_))
 # CSV_FILE = os.path.join(BASE_DIR, "ytac_example_data.csv")
 
-INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
-INFLUX_TOKEN = "d459wOKNp3ZcThcXvKH8SYYBKt7UjhDIaVOAEaY3cU90fh7dJF_I859ROzYGx0u5z9QyaUBep5oNl3zLtvNYgg=="
-INFLUX_ORG = "567d0b44ef2669fe"
+# INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
+# INFLUX_TOKEN = "d459wOKNp3ZcThcXvKH8SYYBKt7UjhDIaVOAEaY3cU90fh7dJF_I859ROzYGx0u5z9QyaUBep5oNl3zLtvNYgg=="
+# INFLUX_ORG = "567d0b44ef2669fe"
+
+
+client = InfluxDBClient(
+    url=os.environ["INFLUX_URL"],
+    token=os.environ["INFLUX_TOKEN"],
+    org=os.environ["INFLUX_ORG"]
+)
 INFLUX_BUCKET = "Aquaris_GPS"
+
 
 client = InfluxDBClient(
     url=INFLUX_URL,
@@ -310,4 +318,5 @@ def index():
 
 
 # if __name__ == "__main__":
+
 #     application.run(debug=True)
