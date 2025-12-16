@@ -15,22 +15,22 @@ application = Flask(__name__)
 # INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
 # INFLUX_TOKEN = "d459wOKNp3ZcThcXvKH8SYYBKt7UjhDIaVOAEaY3cU90fh7dJF_I859ROzYGx0u5z9QyaUBep5oNl3zLtvNYgg=="
 # INFLUX_ORG = "567d0b44ef2669fe"
-
+INFLUX_BUCKET = "Aquaris_GPS"
 
 client = InfluxDBClient(
     url=os.environ["INFLUX_URL"],
     token=os.environ["INFLUX_TOKEN"],
     org=os.environ["INFLUX_ORG"]
 )
-INFLUX_BUCKET = "Aquaris_GPS"
 
 
-client = InfluxDBClient(
-    url=INFLUX_URL,
-    token=INFLUX_TOKEN,
-    org=INFLUX_ORG,
-    timeout=30_000
-)
+
+# client = InfluxDBClient(
+#     url=INFLUX_URL,
+#     token=INFLUX_TOKEN,
+#     org=INFLUX_ORG,
+#     timeout=30_000
+# )
 
 query_api = client.query_api()
 
@@ -320,3 +320,4 @@ def index():
 # if __name__ == "__main__":
 
 #     application.run(debug=True)
+
