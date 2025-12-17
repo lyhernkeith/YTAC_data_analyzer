@@ -47,14 +47,9 @@ HTML_TEMPLATE = """
     <title>Pollution Monitoring Dashboard</title>
     <meta http-equiv="refresh" content="{{ interval }}">
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-o1N3f+9R52M1fM3d6T/9r6t+pH+B0HXXhvVxYfD3Rk0=" crossorigin=""/>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-oM8Wx2k7K30+E+K/z6ieH1U96hYrHzkLh6hXOmxts3Y=" crossorigin=""></script>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 
 
@@ -374,9 +369,9 @@ def index():
 #     )
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     application.run(debug=True)
+    application.run(debug=True)
 
 
 
