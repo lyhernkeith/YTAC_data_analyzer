@@ -66,22 +66,22 @@ HTML_TEMPLATE = """
             margin: 0;
             background: #f7f9fb;
             font-family: "Segoe UI", Arial, sans-serif;
-            display: flex;
-            justify-content: center;
             padding: 30px;
         }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            padding: 24px;
+            margin: 0 auto; 
+        }
+
 
         h1 {
             text-align: center;
             color: #1ca9c9;
         }
 
-        .container{
-            width: 100%;
-            max-width: 700px;
-            padding: 24px;
-        
-        }
         
         .dashboard-grid {
             max-width: 1100px;
