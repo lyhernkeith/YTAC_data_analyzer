@@ -258,9 +258,15 @@ window.onload = function() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    L.marker([lat, lon]).addTo(map)
-        .bindPopup('Current Location')
-        .openPopup();
+    L.circleMarker([lat, lon], {
+        radius: 8,
+        color: "red",
+        fillColor: "#f03",
+        fillOpacity: 0.8
+    })
+    .addTo(map)
+    .bindPopup("Current Location");
+
 }
 </script>
 
