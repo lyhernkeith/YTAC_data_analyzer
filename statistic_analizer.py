@@ -181,73 +181,67 @@ HTML_TEMPLATE = """
 
 <body>
 
-<div class="container">
-    <div class="container">
-        <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
 
-    </div>
+    <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
 
 
-    
+
+
 
 
 
     <div class="container">
-        <div class="dashboard-grid">
-        
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">📊</div>
-                    <div class="card-title">Total Pollution</div>
-                </div>
-                <div class="card-value">{{ total }}%</div>
+    <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">📊</div>
+                <div class="card-title">Total Pollution</div>
             </div>
-        
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">🌡</div>
-                    <div class="card-title">Temperature</div>
-                </div>
-                <div class="gauge-container">
-                    <div class="gauge" style="--gauge-value: {{ temp_deg }}"></div>
-                    <div class="gauge-value">{{ temp }} °C</div>
-                </div>
+            <div class="card-value">{{ total }}%</div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🌡</div>
+                <div class="card-title">Temperature</div>
             </div>
-        
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">🌊</div>
-                    <div class="card-title">Turbidity</div>
-                </div>
-                <div class="gauge-container">
-                    <div class="gauge" style="--gauge-value: {{ turb_deg }}"></div>
-                    <div class="gauge-value">{{ turb }}NTU</div>
-                </div>
+            <div class="gauge-container">
+                <div class="gauge" style="--gauge-value: {{ temp_deg }}"></div>
+                <div class="gauge-value">{{ temp }} °C</div>
             </div>
-        
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">🧪</div>
-                    <div class="card-title">pH Value</div>
-                </div>
-                <div class="gauge-container">
-                    <div class="gauge" style="--gauge-value: {{ ph_deg }}"></div>
-                    <div class="gauge-value">{{ PH }}</div>
-                </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🌊</div>
+                <div class="card-title">Turbidity</div>
             </div>
-        
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon">📍</div>
-                    <div class="card-title">GPS Location</div>
-                </div>
-                <div class="card-value">
-                    {{ lat }}, {{ lon }}
-                </div>
+            <div class="gauge-container">
+                <div class="gauge" style="--gauge-value: {{ turb_deg }}"></div>
+                <div class="gauge-value">{{ turb }}NTU</div>
             </div>
-        
-            
-        
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🧪</div>
+                <div class="card-title">pH Value</div>
+            </div>
+            <div class="gauge-container">
+                <div class="gauge" style="--gauge-value: {{ ph_deg }}"></div>
+                <div class="gauge-value">{{ PH }}</div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">📍</div>
+                <div class="card-title">GPS Location</div>
+            </div>
+            <div class="card-value">
+                {{ lat }}, {{ lon }}
+            </div>
         </div>
     </div>
     <div class="footer">
@@ -256,6 +250,7 @@ HTML_TEMPLATE = """
 </div>
 
 <script>
+window.onload = function() {
     var lat = {{ lat }};
     var lon = {{ lon }};
 
@@ -268,6 +263,7 @@ HTML_TEMPLATE = """
     L.marker([lat, lon]).addTo(map)
         .bindPopup('Current Location')
         .openPopup();
+}
 </script>
 
 
