@@ -182,11 +182,78 @@ HTML_TEMPLATE = """
 <body>
 
 <div class="container">
-    <h1>Pollution Monitoring Dashboard</h1>
-    <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
+    <div class="container">
+        <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
 
+    </div>
+
+
+    
+
+
+
+    <div class="container">
+        <div class="dashboard-grid">
+        
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Total Pollution</div>
+                </div>
+                <div class="card-value">{{ total }}%</div>
+            </div>
+        
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">🌡</div>
+                    <div class="card-title">Temperature</div>
+                </div>
+                <div class="gauge-container">
+                    <div class="gauge" style="--gauge-value: {{ temp_deg }}"></div>
+                    <div class="gauge-value">{{ temp }} °C</div>
+                </div>
+            </div>
+        
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">🌊</div>
+                    <div class="card-title">Turbidity</div>
+                </div>
+                <div class="gauge-container">
+                    <div class="gauge" style="--gauge-value: {{ turb_deg }}"></div>
+                    <div class="gauge-value">{{ turb }}NTU</div>
+                </div>
+            </div>
+        
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">🧪</div>
+                    <div class="card-title">pH Value</div>
+                </div>
+                <div class="gauge-container">
+                    <div class="gauge" style="--gauge-value: {{ ph_deg }}"></div>
+                    <div class="gauge-value">{{ PH }}</div>
+                </div>
+            </div>
+        
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📍</div>
+                    <div class="card-title">GPS Location</div>
+                </div>
+                <div class="card-value">
+                    {{ lat }}, {{ lon }}
+                </div>
+            </div>
+        
+            
+        
+        </div>
+    </div>
+    <div class="footer">
+        Last updated: {{ last_updated }} (Asia/Kuala Lumpur) · Auto refresh {{ interval }}s
+    </div>
 </div>
-
 
 <script>
     var lat = {{ lat }};
@@ -204,67 +271,6 @@ HTML_TEMPLATE = """
 </script>
 
 
-
-<div class="container">
-    <div class="dashboard-grid">
-    
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon">📊</div>
-                <div class="card-title">Total Pollution</div>
-            </div>
-            <div class="card-value">{{ total }}%</div>
-        </div>
-    
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon">🌡</div>
-                <div class="card-title">Temperature</div>
-            </div>
-            <div class="gauge-container">
-                <div class="gauge" style="--gauge-value: {{ temp_deg }}"></div>
-                <div class="gauge-value">{{ temp }} °C</div>
-            </div>
-        </div>
-    
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon">🌊</div>
-                <div class="card-title">Turbidity</div>
-            </div>
-            <div class="gauge-container">
-                <div class="gauge" style="--gauge-value: {{ turb_deg }}"></div>
-                <div class="gauge-value">{{ turb }}NTU</div>
-            </div>
-        </div>
-    
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon">🧪</div>
-                <div class="card-title">pH Value</div>
-            </div>
-            <div class="gauge-container">
-                <div class="gauge" style="--gauge-value: {{ ph_deg }}"></div>
-                <div class="gauge-value">{{ PH }}</div>
-            </div>
-        </div>
-    
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon">📍</div>
-                <div class="card-title">GPS Location</div>
-            </div>
-            <div class="card-value">
-                {{ lat }}, {{ lon }}
-            </div>
-        </div>
-    
-        <div class="footer">
-            Last updated: {{ last_updated }} (Asia/Kuala Lumpur) · Auto refresh {{ interval }}s
-        </div>
-    
-    </div>
-</div>
 </body>
 </html>
 """
