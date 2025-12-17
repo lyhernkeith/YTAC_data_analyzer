@@ -66,7 +66,7 @@ HTML_TEMPLATE = """
 
         .container {
             width: 100%;
-            max-width: 700px;
+            
             padding: 24px;
             margin: 0 auto; 
         }
@@ -176,6 +176,9 @@ HTML_TEMPLATE = """
 
 <body>
 
+
+
+    <h>Water Pollution Dashboard</h>
 
     <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
 
