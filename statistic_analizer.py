@@ -267,7 +267,7 @@ window.onload = function() {
         shadowSize: [41, 41]  
     });
 
-    var marker = L.marker([4.377986, 113.977302], { icon: redIcon })
+    var marker = L.marker([lat, lon], { icon: redIcon })
         .addTo(map)
         .bindPopup("Current Location");
 
