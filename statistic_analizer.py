@@ -47,6 +47,20 @@ HTML_TEMPLATE = """
     <title>Pollution Monitoring Dashboard</title>
     <meta http-equiv="refresh" content="{{ interval }}">
 
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-o1N3f+9R52M1fM3d6T/9r6t+pH+B0HXXhvVxYfD3Rk0=" crossorigin=""/>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-oM8Wx2k7K30+E+K/z6ieH1U96hYrHzkLh6hXOmxts3Y=" crossorigin=""></script>
+
+
+
+
+
+
+
     <style>
         body {
             margin: 0;
@@ -168,8 +182,30 @@ HTML_TEMPLATE = """
 <body>
 
 <div class="container">
-
     <h1>Pollution Monitoring Dashboard</h1>
+    <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
+
+</div>
+
+
+<script>
+    var lat = {{ lat }};
+    var lon = {{ lon }};
+
+    var map = L.map('map').setView([lat, lon], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map)
+        .bindPopup('Current Location')
+        .openPopup();
+</script>
+
+
+
+<div class="container">
     <div class="dashboard-grid">
     
         <div class="dashboard-card">
@@ -292,8 +328,8 @@ def index():
     return render_template_string(
         HTML_TEMPLATE,
         total=data.get("Total%", 0),
-        lat=data.get("Latitude", 0),
-        lon=data.get("Longitude", 0),
+        lat=float(data.get("Latitude", 0)),
+        lon=float(data.get("Longitude", 0)),
         temp=temp,
         turb=turb,
         PH=PH,
