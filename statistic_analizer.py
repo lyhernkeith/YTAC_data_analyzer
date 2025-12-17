@@ -329,8 +329,8 @@ def index():
     turb = float(data.get("Turbidity", 0))
     PH = float(data.get("PH", 0))
     
-    temp_deg = min(360, (temp / 50) * 360)
-    turb_deg = min(360, (turb / 70) * 360)
+    temp_deg = min(360, (temp / 32) * 360)
+    turb_deg = min(360, (turb / 50) * 360)
     ph_deg = min(360, (PH / 14) * 360)
 
     last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
