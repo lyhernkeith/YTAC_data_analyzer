@@ -309,7 +309,7 @@ def get_highest_total_row():
             pollution_score:
                 (r.Per_PH) +
                 (r.Per_Temperature) +
-                (r.Per_Turbidity)
+                (r.Per_Turbidity)   
         }}))
         |> sort(columns: ["pollution_score"], desc: true)
         |> limit(n: 1)
@@ -336,18 +336,21 @@ def index():
     temp = float(data.get("Temperature", 0))
     turb = float(data.get("Turbidity", 0))
     PH = float(data.get("PH", 0))
-    
+    lat = float(data.get("Latitude", 0))
+    lon = float(data.get("Longitude", 0))
+
+
     temp_deg = min(360, (temp / 32) * 360)
     turb_deg = min(360, (turb / 50) * 360)
     ph_deg = min(360, (PH / 14) * 360)
 
     last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
 
-    return render_template_string (
+    return render_template_string(
         HTML_TEMPLATE,
         total=round(float(data.get("pollution_score", 0)), 1),
-        lat=float(data.get("Latitude", 0)),
-        lon=float(data.get("Longitude", 0)),
+        lat=lat,
+        lon=lon,
         temp=temp,
         turb=turb,
         PH=PH,
@@ -357,7 +360,6 @@ def index():
         last_updated=last_updated,
         interval=INTERVAL
     )
-
 
 
 if __name__ == "__main__":
