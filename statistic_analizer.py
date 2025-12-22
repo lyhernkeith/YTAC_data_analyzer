@@ -174,7 +174,7 @@ HTML_TEMPLATE = """
 
 
 
-    <h>Water Pollution Dashboard</h>
+    <h1>Water Pollution Dashboard</h1>
 
     <div id="map" style="height: 400px; margin-bottom: 20px;"></div>
 
@@ -296,7 +296,7 @@ window.onload = function() {
 
 def get_highest_total_row():
     query = f'''
-    from(bucket: "INFLUX_BUCKET")
+    from(bucket: "{INFLUX_BUCKET}")
         |> range(start: -1h)
         |> filter(fn: (r) => r._measurement == "water_quality")
         |> pivot(
@@ -307,9 +307,9 @@ def get_highest_total_row():
         |> map(fn: (r) => ({{
             r with
             pollution_score:
-                (r.Temperature_pct * 0.3) +
-                (r.Turbidity_pct * 0.5) +
-                (r.pH_pct * 0.2)
+                (r.Per_PH) +
+                (r.Per_Temperature) +
+                (r.Per_Turbidity)
         }}))
         |> sort(columns: ["pollution_score"], desc: true)
         |> limit(n: 1)
@@ -331,7 +331,7 @@ def get_highest_total_row():
 
 @application.route("/")
 def index():
-    data = get_highest_temp_row()
+    data = get_highest_total_row()
 
     temp = float(data.get("Temperature", 0))
     turb = float(data.get("Turbidity", 0))
@@ -343,9 +343,9 @@ def index():
 
     last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
 
-    return render_template_string(
+    return render_template_string (
         HTML_TEMPLATE,
-        total=data.get("Total%", 0),
+        total=round(float(data.get("pollution_score", 0)), 1),
         lat=float(data.get("Latitude", 0)),
         lon=float(data.get("Longitude", 0)),
         temp=temp,
