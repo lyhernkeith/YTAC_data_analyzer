@@ -297,7 +297,7 @@ window.onload = function() {
 def get_highest_total_row():
     query = f'''
     from(bucket: "{INFLUX_BUCKET}")
-        |> range(start: -1h)
+        |> range(start: 0)
         |> filter(fn: (r) => r._measurement == "water_quality")
         |> pivot(
             rowKey: ["_time"],
