@@ -11,7 +11,7 @@ application = Flask(__name__)
 
 # BASE_DIR = os.path.dirname(os.path.abspath(_file_))
 # CSV_FILE = os.path.join(BASE_DIR, "ytac_example_data.csv")
-INFLUX_BUCKET = "Aquaris_GPS"
+INFLUX_BUCKET = "edmondliu"
 
 client = InfluxDBClient(
     url=os.environ["INFLUX_URL"],
