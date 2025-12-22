@@ -11,10 +11,6 @@ application = Flask(__name__)
 
 # BASE_DIR = os.path.dirname(os.path.abspath(_file_))
 # CSV_FILE = os.path.join(BASE_DIR, "ytac_example_data.csv")
-
-# INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
-# INFLUX_TOKEN = "d459wOKNp3ZcThcXvKH8SYYBKt7UjhDIaVOAEaY3cU90fh7dJF_I859ROzYGx0u5z9QyaUBep5oNl3zLtvNYgg=="
-# INFLUX_ORG = "567d0b44ef2669fe"
 INFLUX_BUCKET = "Aquaris_GPS"
 
 client = InfluxDBClient(
@@ -206,7 +202,7 @@ HTML_TEMPLATE = """
             </div>
             <div class="gauge-container">
                 <div class="gauge" style="--gauge-value: {{ temp_deg }}"></div>
-                <div class="gauge-value">{{ temp }} °C</div>
+                <div class="gauge-value">{{ temp }} C</div>
             </div>
         </div>
 
@@ -298,13 +294,26 @@ window.onload = function() {
 
 #     return data
 
-def get_highest_temp_row():
+def get_highest_total_row():
     query = f'''
-    from(bucket: "{INFLUX_BUCKET}")
-      |> range(start: 0)
-      |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-      |> sort(columns: ["Temperature"], desc: true)
-      |> limit(n:1)
+    from(bucket: "INFLUX_BUCKET")
+        |> range(start: -1h)
+        |> filter(fn: (r) => r._measurement == "water_quality")
+        |> pivot(
+            rowKey: ["_time"],
+            columnKey: ["_field"],
+            valueColumn: "_value"
+        )
+        |> map(fn: (r) => ({{
+            r with
+            pollution_score:
+                (r.Temperature_pct * 0.3) +
+                (r.Turbidity_pct * 0.5) +
+                (r.pH_pct * 0.2)
+        }}))
+        |> sort(columns: ["pollution_score"], desc: true)
+        |> limit(n: 1)
+
     '''
 
     tables = query_api.query(query)
@@ -312,9 +321,8 @@ def get_highest_temp_row():
 
     for table in tables:
         for record in table.records:
-            # After pivot, each record contains all fields in one row
             data = record.values
-            break  # only need the first record
+            break 
 
     return data
 
@@ -350,36 +358,6 @@ def index():
         interval=INTERVAL
     )
 
-
-
-# @application.route("/")
-# def index():
-#     df = pd.read_csv(CSV_FILE)
-#     max_row = df.loc[df["Total%"].idxmax()]
-
-#     temp = float(max_row["Temperature"])
-#     turb = float(max_row["Turbidity"])
-#     ph = float(max_row["PH"])
-
-#     return render_template_string(
-#         HTML_TEMPLATE,
-#         total=round(max_row["Total%"], 1),
-#         lat=max_row["Latitude"],
-#         lon=max_row["Longitude"],
-#         temp=temp,
-#         turbidity=turb,
-#         PH=ph,
-
-#         temp_deg=min(360, (temp / 50) * 360),
-#         turb_deg=min(360, (turb / 70) * 360),
-#         ph_deg=min(360, (ph / 14) * 360),
-
-#         last_updated=datetime.now(
-#             ZoneInfo("Asia/Kuala_Lumpur")
-#         ).strftime("%Y-%m-%d %H:%M:%S"),
-
-#         interval=INTERVAL
-#     )
 
 
 if __name__ == "__main__":
