@@ -307,9 +307,9 @@ def get_highest_total_row():
         |> map(fn: (r) => ({{
             r with
             pollution_score:
-                (r.Per_PH) +
-                (r.Per_Temperature) +
-                (r.Per_Turbidity)   
+                (if exists r.Per_PH then r.Per_PH else 0.0) +
+                (if exists r.Per_Temperature then r.Per_Temperature else 0.0) +
+                (if exists r.Per_Turbidity then r.Per_Turbidity else 0.0) 
         }}))
         |> sort(columns: ["pollution_score"], desc: true)
         |> limit(n: 1)
