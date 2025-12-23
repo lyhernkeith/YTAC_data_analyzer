@@ -248,7 +248,7 @@ window.onload = function() {
     var lat = {{ lat }};
     var lon = {{ lon }};
 
-    var map = L.map('map').setView([lat, lon], 6);
+    var map = L.map('map').setView([lat, lon], 12);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -335,7 +335,7 @@ def index():
 
     temp = float(data.get("Temperature", 0))
     turb = float(data.get("Turbidity", 0))
-    PH = float(data.get("PH", 0))
+    PH = float(data.get("P  H", 0))
     lat = float(data.get("Latitude", 0))
     lon = float(data.get("Longitude", 0))
 
