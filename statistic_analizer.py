@@ -347,9 +347,9 @@ def index():
     lat = 4.377986
     lon = 113.977302
 
-    temp_deg = min(360, (temp / 32) * 360)
-    turb_deg = min(360, (turb / 50) * 360)
-    ph_deg = min(360, (PH / 14) * 360)
+    temp_deg = min(360, (abs(temp) / 32) * 360)
+    turb_deg = min(360, (abs(turb) / 50) * 360)
+    ph_deg = min(360, (abs(PH) / 14) * 360)
 
     last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
 
