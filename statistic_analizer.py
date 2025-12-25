@@ -335,10 +335,17 @@ def index():
 
     temp = float(data.get("Temperature", 0))
     turb = float(data.get("Turbidity", 0))
-    PH = float(data.get("P  H", 0))
+    PH = float(data.get("PH", 0))
     lat = float(data.get("Latitude", 0))
     lon = float(data.get("Longitude", 0))
 
+    # [4.377986, 113.977302]
+
+    temp = float(30)
+    turb = float(-50)
+    PH = float(6.5)
+    lat = 4.377986
+    lon = 113.977302
 
     temp_deg = min(360, (temp / 32) * 360)
     turb_deg = min(360, (turb / 50) * 360)
