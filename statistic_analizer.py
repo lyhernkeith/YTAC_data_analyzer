@@ -249,7 +249,6 @@ window.onload = function() {
     var lat = {{ lat }};
     var lon = {{ lon }};
 
-    var map = L.map('map').setView([lat, lon], 10);
     var map = L.map('map').setView([4.412461, 113.993664],10);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
