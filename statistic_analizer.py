@@ -316,34 +316,39 @@ window.onload = function() {
 def get_highest_total_row():
     query = f'''
     from(bucket: "{INFLUX_BUCKET}")
-        |> range(start: 0)
+        |> range(start: -30d)
         |> filter(fn: (r) => r._measurement == "water_quality")
         |> pivot(
             rowKey: ["_time"],
             columnKey: ["_field"],
             valueColumn: "_value"
         )
+        |> filter(fn: (r) =>
+            r.Temperature >= 0.0 and r.Temperature <= 45.0 and
+            r.Turbidity >= 0.0 and r.Turbidity <= 200.0 and
+            r.PH >= 0.0 and r.PH <= 14.0 and
+            r.Latitude > 1.0 and r.Longitude > 1.0
+        )
         |> map(fn: (r) => ({{
             r with
             pollution_score:
-                (if exists r.Per_PH then r.Per_PH else 0.0) +
-                (if exists r.Per_Temperature then r.Per_Temperature else 0.0) +
-                (if exists r.Per_Turbidity then r.Per_Turbidity else 0.0) 
+                (
+                    (if exists r.Per_PH then r.Per_PH else 0.0) +
+                    (if exists r.Per_Temperature then r.Per_Temperature else 0.0) +
+                    (if exists r.Per_Turbidity then r.Per_Turbidity else 0.0)
+                ) / 3.0
         }}))
         |> sort(columns: ["pollution_score"], desc: true)
         |> limit(n: 1)
-
     '''
 
-    tables = query_api.query(query)
-    data = {}
 
+    tables = query_api.query(query)
     for table in tables:
         for record in table.records:
-            data = record.values
-            break 
+            return record.values
+    return {}
 
-    return data
 
 
 
@@ -358,6 +363,9 @@ def index():
     lat = float(data.get("Latitude", 0))
     lon = float(data.get("Longitude", 0))
 
+    temp = max(0, min(temp, 45))        
+    turb = max(-50, min(turb, 200))      
+    PH   = max(0, min(PH, 14))        
     # [4.377986, 113.977302]
 
     # temp = float(30)
@@ -366,8 +374,8 @@ def index():
     # lat = 4.377986
     # lon = 113.977302
 
-    temp_deg = min(360, (abs(temp) / 32) * 360)
-    turb_deg = min(360, (abs(turb) / 50) * 360)
+    temp_deg = min(360, (abs(temp) / 40) * 360)
+    turb_deg = min(360, (abs(turb) / 100) * 360)
     ph_deg = min(360, (abs(PH) / 14) * 360)
 
     last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
