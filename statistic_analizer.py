@@ -244,29 +244,69 @@ HTML_TEMPLATE = """
 </div>
 
 <script>
-window.onload = function() {
+# window.onload = function() {
+#     var lat = {{ lat }};
+#     var lon = {{ lon }};
+
+#     var map = L.map('map').setView([lat, lon], 16);
+
+#     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+#         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+#     }).addTo(map);
+
+#     var redIcon = L.icon({
+#         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+#         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+#         iconSize: [25, 41],   
+#         iconAnchor: [12, 41], 
+#         popupAnchor: [1, -34],
+#         shadowSize: [41, 41]  
+#     });
+
+#     var marker = L.marker([lat, lon], { icon: redIcon })
+#         .addTo(map)
+#         .bindPopup("Current Location");
+
     var lat = {{ lat }};
     var lon = {{ lon }};
 
-    var map = L.map('map').setView([lat, lon], 16);
+    var map = L.map('map').setView([lat, lon], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     var redIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        iconSize: [25, 41],   
-        iconAnchor: [12, 41], 
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
         popupAnchor: [1, -34],
-        shadowSize: [41, 41]  
+        shadowSize: [41, 41]
     });
 
-    var marker = L.marker([lat, lon], { icon: redIcon })
+    // Main live location marker
+    L.marker([lat, lon], { icon: redIcon })
         .addTo(map)
-        .bindPopup("Current Location");
+        .bindPopup("Current Sensor Location");
 
+    // Dummy monitoring stations
+    var dummyPoints = [
+        [4.412461, 113.993664],
+        [4.406671, 113.992209],
+        [4.438063, 114.003167],
+        [4.420455, 114.022120],
+        [4.399393, 113.984597],
+        [4.449425, 114.021404],
+        [4.456596, 114.011400],
+        [4.467727, 114.009097]
+    ];
+
+    dummyPoints.forEach(function(point, index) {
+        L.marker(point)
+            .addTo(map)
+            .bindPopup("Dummy Station #" + (index + 1));
+    });
 }
 </script>
 
