@@ -244,28 +244,7 @@ HTML_TEMPLATE = """
 </div>
 
 <script>
-# window.onload = function() {
-#     var lat = {{ lat }};
-#     var lon = {{ lon }};
-
-#     var map = L.map('map').setView([lat, lon], 16);
-
-#     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-#         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-#     }).addTo(map);
-
-#     var redIcon = L.icon({
-#         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-#         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-#         iconSize: [25, 41],   
-#         iconAnchor: [12, 41], 
-#         popupAnchor: [1, -34],
-#         shadowSize: [41, 41]  
-#     });
-
-#     var marker = L.marker([lat, lon], { icon: redIcon })
-#         .addTo(map)
-#         .bindPopup("Current Location");
+window.onload = function() {
 
     var lat = {{ lat }};
     var lon = {{ lon }};
@@ -381,11 +360,11 @@ def index():
 
     # [4.377986, 113.977302]
 
-    temp = float(30)
-    turb = float(-50)
-    PH = float(6.5)
-    lat = 4.377986
-    lon = 113.977302
+    # temp = float(30)
+    # turb = float(-50)
+    # PH = float(6.5)
+    # lat = 4.377986
+    # lon = 113.977302
 
     temp_deg = min(360, (abs(temp) / 32) * 360)
     turb_deg = min(360, (abs(turb) / 50) * 360)
