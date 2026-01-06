@@ -249,7 +249,8 @@ window.onload = function() {
     var lat = {{ lat }};
     var lon = {{ lon }};
 
-    var map = L.map('map').setView([lat, lon], 15);
+    var map = L.map('map').setView([lat, lon], 10);
+    var map = L.map('map').setView([4.412461, 113.993664],10);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -265,7 +266,7 @@ window.onload = function() {
     });
 
    
-    L.marker([lat, lon], { icon: redIcon })
+    L.marker([4.412461, 113.993664], { icon: redIcon })
         .addTo(map)
         .bindPopup("Current Sensor Location");
 
