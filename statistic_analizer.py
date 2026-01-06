@@ -273,7 +273,7 @@ HTML_TEMPLATE = """
     var map = L.map('map').setView([lat, lon], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     var redIcon = L.icon({
@@ -285,12 +285,12 @@ HTML_TEMPLATE = """
         shadowSize: [41, 41]
     });
 
-    // Main live location marker
+   
     L.marker([lat, lon], { icon: redIcon })
         .addTo(map)
         .bindPopup("Current Sensor Location");
 
-    // Dummy monitoring stations
+   
     var dummyPoints = [
         [4.412461, 113.993664],
         [4.406671, 113.992209],
