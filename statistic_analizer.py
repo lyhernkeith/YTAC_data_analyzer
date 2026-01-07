@@ -331,11 +331,11 @@ def get_highest_total_row():
             r with
 
             ph_pct:
-                (abs(r.PH - 7.0) / 7.0) * 100.0
+                (abs(r.PH - 7.0) / 7.0) * 100.0,
 
 
             temp_pct:
-                abs(r.Temperature - 25.0) / 20.0 * 100.0
+                abs(r.Temperature - 25.0) / 20.0 * 100.0,
 
             turb_pct:
                 if r.Turbidity <= 0.0 then 0.0
