@@ -313,6 +313,8 @@ window.onload = function() {
 #     return data
 def get_highest_total_row():
     query = f'''
+    import "math"
+
     from(bucket: "{INFLUX_BUCKET}")
         |> range(start: -30d)
         |> filter(fn: (r) => r._measurement == "water_quality")
@@ -329,9 +331,9 @@ def get_highest_total_row():
         )
         |> map(fn: (r) => ({{
             r with
-            ph_pct: (abs(r.PH - 7.0) / 7.0) * 100.0,
-            temp_pct: abs(r.Temperature - 25.0) / 20.0 * 100.0,
-            turb_pct: if r.Turbidity <= 0.0 then 0.0 else (r.Turbidity / 200.0) * 100.0
+            ph_pct: math.abs(r.PH - 7.0) / 7.0 * 100.0,
+            temp_pct: math.abs(r.Temperature - 25.0) / 20.0 * 100.0,
+            turb_pct: if r.Turbidity <= 0.0 then 0.0 else r.Turbidity / 200.0 * 100.0
         }}))
         |> map(fn: (r) => ({{
             r with
