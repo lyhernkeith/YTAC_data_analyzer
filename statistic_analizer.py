@@ -311,7 +311,6 @@ window.onload = function() {
 #             data[record.get_field()] = record.get_value()
 
 #     return data
-
 def get_highest_total_row():
     query = f'''
     from(bucket: "{INFLUX_BUCKET}")
@@ -330,23 +329,34 @@ def get_highest_total_row():
         )
         |> map(fn: (r) => ({{
             r with
+
+            ph_pct:
+                (abs(r.PH - 7.0) / 7.0) * 100.0
+
+
+            temp_pct:
+                abs(r.Temperature - 25.0) / 20.0 * 100.0
+
+            turb_pct:
+                if r.Turbidity <= 0.0 then 0.0
+                else (r.Turbidity / 200.0) * 100.0,
+                
+        }}))
+        |> map(fn: (r) => ({{
+            r with
             pollution_score:
-                (
-                    (if exists r.Per_PH then r.Per_PH else 0.0) +
-                    (if exists r.Per_Temperature then r.Per_Temperature else 0.0) +
-                    (if exists r.Per_Turbidity then r.Per_Turbidity else 0.0)
-                )
+                (r.ph_pct + r.temp_pct + r.turb_pct) / 3.0
         }}))
         |> sort(columns: ["pollution_score"], desc: true)
         |> limit(n: 1)
     '''
-
 
     tables = query_api.query(query)
     for table in tables:
         for record in table.records:
             return record.values
     return {}
+
 
 
 
@@ -373,8 +383,8 @@ def index():
     # lat = 4.377986
     # lon = 113.977302
 
-    temp_deg = min(360, (abs(temp) / 40) * 360)
-    turb_deg = min(360, (abs(turb) / 100) * 360)
+    temp_deg = min(360, (abs(temp) / 45) * 360)
+    turb_deg = min(360, (abs(turb) / 200) * 360)
     ph_deg = min(360, (abs(PH) / 14) * 360)
 
     last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
