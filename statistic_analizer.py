@@ -246,44 +246,43 @@ HTML_TEMPLATE = """
 <script>
 window.onload = function() {
 
-    var lat = {{ lat }};
-    var lon = {{ lon }};
-
-    var map = L.map('map').setView([4.412461, 113.993664],10);
+    var map = L.map('map').setView([4.412461, 113.993664], 12);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; OpenStreetMap'
     }).addTo(map);
+
+    var points = {{ points | tojson }};
+    var maxPoint = {{ max_point | tojson }};
 
     var redIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
         iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+        iconAnchor: [12, 41]
     });
 
-   
-    L.marker([4.412461, 113.993664], { icon: redIcon })
-        .addTo(map)
-        .bindPopup("Current Sensor Location");
+    var blueIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41]
+    });
 
-   
-    var dummyPoints = [
-        [4.406671, 113.992209],
-        [4.438063, 114.003167],
-        [4.420455, 114.022120],
-        [4.399393, 113.984597],
-        [4.449425, 114.021404],
-        [4.456596, 114.011400],
-        [4.467727, 114.009097]
-    ];
+    points.forEach(function(p) {
 
-    dummyPoints.forEach(function(point, index) {
-        L.marker(point)
+        var isMax = (
+            p.lat === maxPoint.lat &&
+            p.lon === maxPoint.lon
+        );
+
+        var icon = isMax ? redIcon : blueIcon;
+
+        L.marker([p.lat, p.lon], { icon: icon })
             .addTo(map)
-            .bindPopup("Dummy Station #" + (index + 1));
+            .bindPopup(
+                "Pollution: " + p.score.toFixed(2) + "%"
+            );
     });
 }
 </script>
@@ -311,7 +310,7 @@ window.onload = function() {
 #             data[record.get_field()] = record.get_value()
 
 #     return data
-def get_highest_total_row():
+def get_all_points():
     query = f'''
     import "math"
 
@@ -334,28 +333,36 @@ def get_highest_total_row():
             ph_pct: math.abs(x:r.PH - 7.0) / 7.0 * 100.0,
             temp_pct: math.abs(x:r.Temperature - 25.0) / 20.0 * 100.0,
             turb_pct: if r.Turbidity <= 0.0 then 0.0 else r.Turbidity / 200.0 * 100.0
-        }}))        |> map(fn: (r) => ({{
+        }}))
+        |> map(fn: (r) => ({{
             r with
             pollution_score: (r.ph_pct + r.temp_pct + r.turb_pct) / 3.0
         }}))
-        |> sort(columns: ["pollution_score"], desc: true)
-        |> limit(n: 1)
+        |> sort(columns: ["_time"], desc: true)
+        |> limit(n: 9)
     '''
 
     tables = query_api.query(query)
+
+    points = []
     for table in tables:
         for record in table.records:
-            return record.values
-    return {}
+            points.append({
+                "lat": float(record.values.get("Latitude", 0)),
+                "lon": float(record.values.get("Longitude", 0)),
+                "score": float(record.values.get("pollution_score", 0))
+            })
 
-
-
+    return points
 
 
 
 @application.route("/")
 def index():
-    data = get_highest_total_row()
+    points = get_all_points()
+
+
+    max_point = max(points, key=lambda x: x["score"]) if points else {}
 
     temp = float(data.get("Temperature", 0))
     turb = float(data.get("Turbidity", 0))
@@ -382,9 +389,11 @@ def index():
 
     return render_template_string(
         HTML_TEMPLATE,
-        total=round(float(data.get("pollution_score", 0)), 1),
-        lat=lat,
-        lon=lon,
+        points=points,
+        max_point=max_point,
+        total=round(max_point.get("score", 0), 1),
+        lat=max_point.get("lat", 0),
+        lon=max_point.get("lon", 0),
         temp=temp,
         turb=turb,
         PH=PH,
@@ -393,7 +402,7 @@ def index():
         ph_deg=ph_deg,
         last_updated=last_updated,
         interval=INTERVAL
-    )
+)
 
 
 if __name__ == "__main__":
