@@ -13,26 +13,12 @@ application = Flask(__name__)
 # CSV_FILE = os.path.join(BASE_DIR, "ytac_example_data.csv")
 INFLUX_BUCKET = "edmondliu"
 
-# client = InfluxDBClient(
-#     url=os.environ["INFLUX_URL"],
-#     token=os.environ["INFLUX_TOKEN"],
-#     org=os.environ["INFLUX_ORG"]
-# )
-
-
-INFLUX_ORG = "ac563013142560b8"
-
-INFLUX_TOKEN = "YPJ-y1LoiTKvCfK_VHSP-wHreSU8gVZjQ_aWxJaMTTGxZu0S81_t_RhKniiR7qzuj-qp0LlghenwskLquSmPMw=="
-
-INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
-
-
-
 client = InfluxDBClient(
-    url= INFLUX_URL,   # change if needed
-    token= INFLUX_TOKEN,
-    org= INFLUX_ORG
+    url=os.environ["INFLUX_URL"],
+    token=os.environ["INFLUX_TOKEN"],
+    org=os.environ["INFLUX_ORG"]
 )
+
 
 
 # client = InfluxDBClient(
