@@ -13,12 +13,26 @@ application = Flask(__name__)
 # CSV_FILE = os.path.join(BASE_DIR, "ytac_example_data.csv")
 INFLUX_BUCKET = "edmondliu"
 
-client = InfluxDBClient(
-    url=os.environ["INFLUX_URL"],
-    token=os.environ["INFLUX_TOKEN"],
-    org=os.environ["INFLUX_ORG"]
-)
+# client = InfluxDBClient(
+#     url=os.environ["INFLUX_URL"],
+#     token=os.environ["INFLUX_TOKEN"],
+#     org=os.environ["INFLUX_ORG"]
+# )
 
+
+INFLUX_ORG = "ac563013142560b8"
+
+INFLUX_TOKEN = "YPJ-y1LoiTKvCfK_VHSP-wHreSU8gVZjQ_aWxJaMTTGxZu0S81_t_RhKniiR7qzuj-qp0LlghenwskLquSmPMw=="
+
+INFLUX_URL = "https://us-east-1-1.aws.cloud2.influxdata.com"
+
+
+
+client = InfluxDBClient(
+    url= INFLUX_URL,   # change if needed
+    token= INFLUX_TOKEN,
+    org= INFLUX_ORG
+)
 
 
 # client = InfluxDBClient(
@@ -32,7 +46,7 @@ query_api = client.query_api()
 
 
 
-INTERVAL = 10
+INTERVAL = 60
 
 
 HTML_TEMPLATE = """
@@ -243,6 +257,8 @@ HTML_TEMPLATE = """
     </div>
 </div>
 
+
+
 <script>
 window.onload = function() {
 
@@ -262,13 +278,6 @@ window.onload = function() {
         iconAnchor: [12, 41]
     });
 
-    var blueIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41]
-    });
-
     points.forEach(function(p) {
 
         var isMax = (
@@ -276,15 +285,25 @@ window.onload = function() {
             p.lon === maxPoint.lon
         );
 
-        var icon = isMax ? redIcon : blueIcon;
-
-        L.marker([p.lat, p.lon], { icon: icon })
+        if (isMax) {
+           
+            L.marker([p.lat, p.lon], { icon: redIcon })
+                .addTo(map)
+                .bindPopup("Most Polluted<br>Score: " + p.score.toFixed(2) + "%");
+        } else {
+            
+            L.circleMarker([p.lat, p.lon], {
+                radius: 6,
+                color: "#3388ff",
+                fillColor: "#3388ff",
+                fillOpacity: 0.8
+            })
             .addTo(map)
-            .bindPopup(
-                "Pollution: " + p.score.toFixed(2) + "%"
-            );
+            .bindPopup("Pollution: " + p.score.toFixed(2) + "%");
+        }
     });
-}
+
+};
 </script>
 
 
@@ -309,7 +328,8 @@ window.onload = function() {
 #         for record in table.records:
 #             data[record.get_field()] = record.get_value()
 
-#     return data
+
+
 def get_all_points():
     query = f'''
     import "math"
@@ -350,50 +370,44 @@ def get_all_points():
             points.append({
                 "lat": float(record.values.get("Latitude", 0)),
                 "lon": float(record.values.get("Longitude", 0)),
-                "score": float(record.values.get("pollution_score", 0))
+                "score": float(record.values.get("pollution_score", 0)),
+                "Temperature": float(record.values.get("Temperature", 0)),
+                "Turbidity": float(record.values.get("Turbidity", 0)),
+                "PH": float(record.values.get("PH", 0))
             })
 
     return points
 
 
-
 @application.route("/")
 def index():
+
     points = get_all_points()
 
+    if not points:
+        return "No data available"
 
-    max_point = max(points, key=lambda x: x["score"]) if points else {}
+    # find most polluted point
+    max_point = max(points, key=lambda x: x["score"])
 
-    temp = float(data.get("Temperature", 0))
-    turb = float(data.get("Turbidity", 0))
-    PH = float(data.get("PH", 0))
-    lat = float(data.get("Latitude", 0))
-    lon = float(data.get("Longitude", 0))
+    temp = max(0, min(max_point["Temperature"], 45))
+    turb = max(0, min(max_point["Turbidity"], 200))
+    PH   = max(0, min(max_point["PH"], 14))
 
-    temp = max(0, min(temp, 45))        
-    turb = max(-50, min(turb, 200))      
-    PH   = max(0, min(PH, 14))        
-    # [4.377986, 113.977302]
-
-    # temp = float(30)
-    # turb = float(-50)
-    # PH = float(6.5)
-    # lat = 4.377986
-    # lon = 113.977302
+    lat = max_point["lat"]
+    lon = max_point["lon"]
 
     temp_deg = min(360, (abs(temp) / 45) * 360)
     turb_deg = min(360, (abs(turb) / 200) * 360)
-    ph_deg = min(360, (abs(PH) / 14) * 360)
+    ph_deg   = min(360, (abs(PH) / 14) * 360)
 
     last_updated = datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).strftime("%Y-%m-%d %H:%M:%S")
 
     return render_template_string(
         HTML_TEMPLATE,
-        points=points,
-        max_point=max_point,
-        total=round(max_point.get("score", 0), 1),
-        lat=max_point.get("lat", 0),
-        lon=max_point.get("lon", 0),
+        total=round(max_point["score"], 1),
+        lat=lat,
+        lon=lon,
         temp=temp,
         turb=turb,
         PH=PH,
@@ -401,8 +415,11 @@ def index():
         temp_deg=temp_deg,
         ph_deg=ph_deg,
         last_updated=last_updated,
-        interval=INTERVAL
-)
+        interval=INTERVAL,
+        points=points,
+        max_point=max_point
+    )
+
 
 
 if __name__ == "__main__":
